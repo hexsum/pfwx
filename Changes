@@ -1,3 +1,6 @@
+2015-04-12 Weixin::Client v1.4
+1）将登录cookie保存到本地，再次登录免扫码
+
 2015-04-12 Weixin::Client v1.3
 1）修复文档错误
 
