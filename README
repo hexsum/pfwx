@@ -1,0 +1,27 @@
+Weixin::Client v1.0
+========================
+使用Perl语言编写的微信客户端，手机扫码登录
+
+支持发送和接收好友消息、群组消息，支持和手机客户端同时在线
+
+INSTALLATION:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+DEPENDENCIES:
+   
+    JSON
+    AnyEvent::HTTP
+    LWP::UserAgent
+    LWP::Protocol::https
+
+COPYRIGHT 和 LICENCE
+
+Copyright (C) 2014 by sjdy521
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.8.8 or,
+at your option, any later version of Perl 5 you may have available.
