@@ -35,7 +35,7 @@ Weixin::Client - A Weixin Client in Perl Language
     
     };
     #客户端进入事件循环，开始运行
-    $cient->run();
+    $client->run();
 
 =head1 PUBLIC CLASS METHOD
 
