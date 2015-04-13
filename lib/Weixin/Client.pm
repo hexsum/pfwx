@@ -1,5 +1,6 @@
 package Weixin::Client;
 use strict;
+use FindBin qw($Bin);
 use Weixin::Util;
 use LWP::UserAgent;
 use Weixin::UserAgent;
@@ -22,9 +23,10 @@ our $VERSION = "1.3";
 sub new{
     my $class = shift;
     my %p = @_;
-    my $agent = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062';
+    my $agent = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062'; 
+    my $cookie_filename = $p{login_file} || "$Bin/weixin_client_login.dat";
     my $self = {
-        cookie_jar              => HTTP::Cookies->new(hide_cookie2=>1),
+        cookie_jar              => HTTP::Cookies->new(hide_cookie2=>1,file=>$cookie_filename,autosave=>1),
         debug                   => $p{debug},
         _token                  => {},
         _watchers               => {},

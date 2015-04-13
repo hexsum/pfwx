@@ -41,9 +41,13 @@ Weixin::Client - A Weixin Client in Perl Language
 
 =over
 
-=item new([debug=>0|1])
+=item new()
    
-初始化一个weixin客户端对象，可选参数debug
+初始化一个weixin客户端对象
+
+可选参数 debug 0|1 
+
+可选参数 login_file 设置登录相关cookie保存的文件路径，默认保存在当前目录下的 weixin_client_login.dat
 
     my $client = Weixin::Client->new(debug=>0);
 

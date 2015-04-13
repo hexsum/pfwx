@@ -1,11 +1,17 @@
 package Weixin::Client;
 use Weixin::Client::Private::_get_qrcode_uuid;
 use Weixin::Client::Private::_get_qrcode_image;
+use Weixin::Client::Private::_is_need_login;
 sub _login{
-    my $self = shift;
+    my $self = shift;   
+    console "客户端准备登录...\n";
+    unless($self->_is_need_login()){
+        console "微信登录成功\n";
+        return 1;
+    }
     my $show_tip = 1;
     my $api = 'https://login.weixin.qq.com/cgi-bin/mmwebwx-bin/login'; 
-    console "客户端准备登录...\n";
+    
     my $qrcode_uuid = $self->_get_qrcode_uuid() ;
     unless(defined $qrcode_uuid){
         console "无法获取到登录二维码，登录失败\n";
