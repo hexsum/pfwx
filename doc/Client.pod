@@ -18,20 +18,20 @@ Weixin::Client - A Weixin Client in Perl Language
     $client->login();   
 
     #设置客户端接收消息回调函数
-    $client->on_receive_message = sub{
+    $client->on_receive_msg = sub{
         my $msg = shift ;
 
         #打印收到的消息
-        $w->call("ShowMsg",$msg);
+        $client->call("ShowMsg",$msg);
 
         #对收到的消息，以相同的内容回复
-        $w->reply_msg($msg,$msg->{Content});
+        $client->reply_msg($msg,$msg->{Content});
     };
     #设置客户端发送消息回调函数
-    $client->on_send_message = sub {
+    $client->on_send_msg = sub {
         my $msg = shift;    
         #打印发送的消息
-        $w->call("ShowMsg",$msg);
+        $client->call("ShowMsg",$msg);
     
     };
     #客户端进入事件循环，开始运行

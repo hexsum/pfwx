@@ -92,9 +92,9 @@ sub prepare {
     $self->{_receive_message_queue}->get(sub{
         my $msg = shift;
         return if $self->{is_stop};
-        if(ref $self->{on_receive_message} eq 'CODE'){
+        if(ref $self->{on_receive_msg} eq 'CODE'){
             eval{
-                $self->{on_receive_message}->($msg);
+                $self->{on_receive_msg}->($msg);
             };
             console $@ . "\n" if $@;
         } 
@@ -111,8 +111,8 @@ sub prepare {
                     $status->{status},
                 );
             }
-            if(ref $self->{on_send_message} eq 'CODE'){
-                $self->{on_send_message}->(
+            if(ref $self->{on_send_msg} eq 'CODE'){
+                $self->{on_send_msg}->(
                     $msg,
                     $status->{is_success},
                     $status->{status},

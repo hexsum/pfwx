@@ -43,8 +43,8 @@ sub _send_text_msg {
                     $status->{status}       #status
                 );
             }
-            if(ref $self->{on_send_message} eq 'CODE'){
-                $self->{on_send_message}->(
+            if(ref $self->{on_send_msg} eq 'CODE'){
+                $self->{on_send_msg}->(
                     $msg,                   #msg
                     $status->{is_success},  #is_success
                     $status->{status}       #status

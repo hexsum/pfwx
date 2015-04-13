@@ -4,14 +4,14 @@ sub on_run :lvalue {
     $self->{on_run};
 }
 
-sub on_receive_message:lvalue {
+sub on_receive_msg:lvalue {
     my $self = shift;
-    $self->{on_receive_message};
+    $self->{on_receive_msg};
 }
 
-sub on_send_message :lvalue {
+sub on_send_msg :lvalue {
     my $self = shift;
-    $self->{on_send_message};
+    $self->{on_send_msg};
 }
 
 1;
