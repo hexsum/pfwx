@@ -18,7 +18,7 @@ Weixin::Client - A Weixin Client in Perl Language
     $client->login();   
 
     #设置客户端接收消息回调函数
-    $client->on_receive_message = sub{
+    $client->on_receive_msg = sub{
         my $msg = shift ;
 
         #打印收到的消息
@@ -28,7 +28,7 @@ Weixin::Client - A Weixin Client in Perl Language
         $client->reply_msg($msg,$msg->{Content});
     };
     #设置客户端发送消息回调函数
-    $client->on_send_message = sub {
+    $client->on_send_msg = sub {
         my $msg = shift;    
         #打印发送的消息
         $client->call("ShowMsg",$msg);
@@ -47,20 +47,20 @@ Weixin::Client - A Weixin Client in Perl Language
 
     my $client = Weixin::Client->new(debug=>0);
 
-=item on_send_message() :lvalue 
+=item on_send_msg() :lvalue 
 
 设置客户端发送消息完成后的回调函数，常用于在回调函数中记录发送消息内容或者判断发送消息状态
 
 这是一个具有lvalue属性的subroutine，你必须赋值一个函数引用
         
-    $client->on_send_message() = sub{
+    $client->on_send_msg() = sub{
         my ($msg,$is_success,$status) = @_;
         ...
     };
 
 或者使用hash的形式
 
-    $client->{on_send_message} = sub{
+    $client->{on_send_msg} = sub{
         my ($msg,$is_success,$status) = @_;
         ...
     };
@@ -77,7 +77,7 @@ Weixin::Client - A Weixin Client in Perl Language
 
 因此你不需要再根据$is_success自己再进行重试
 
-=item on_receive_message() :lvalue
+=item on_receive_msg() :lvalue
     
 设置客户端接收消息回调函数，客户端接收到消息后会调用设置的回调函数，讲接收到的消息
 
@@ -85,7 +85,7 @@ Weixin::Client - A Weixin Client in Perl Language
 
 比如打印接收到的消息，对接收到的消息进行应答等
 
-    $client->on_receive_message() = sub{
+    $client->on_receive_msg() = sub{
         my $msg = shift;
     };
 
@@ -235,9 +235,9 @@ Weixin::Client - A Weixin Client in Perl Language
 
 大部分时候，我们都是倾向于收到消息后针对此收到的消息进行回复，这种情况下可以考虑使用
 
-reply_message(),该方法接收两个参数，第一个参数是接收到的消息，第二个参数是回复的内容,比如：
+reply_msg(),该方法接收两个参数，第一个参数是接收到的消息，第二个参数是回复的内容,比如：
 
-    $client->on_receive_message = sub{
+    $client->on_receive_msg = sub{
         my $msg = shift;
         $client->reply_msg($msg,"hello world");
     };
@@ -439,11 +439,11 @@ run()是自身启动了一个事件循环，适合只运行单一帐号的情况
 打印接收或者发送消息的插件，插件调用时需要传入接收或者发送的$msg
 
     $client->load("ShowMsg");
-    $client->on_receive_message = sub{
+    $client->on_receive_msg = sub{
         my $msg = shift;
         $client->call("ShowMsg",$msg);
     };
-    $client->on_send_message =sub {
+    $client->on_send_msg =sub {
         my $msg = shift;
         my $is_success = shift;
         my $status = shift;
