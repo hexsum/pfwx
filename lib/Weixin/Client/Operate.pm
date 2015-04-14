@@ -126,6 +126,10 @@ sub prepare {
         :                                   undef
         ;
     });
+    eval{
+        my $tmpdir = $self->{tmpdir};
+        unlink <$tmpdir/weixin_qrcode_*.jpg>;
+    };
 }
 sub welcome{
     my $self = shift;
