@@ -45,7 +45,6 @@ sub call{
         else{
             return 1;
         }
-        print "replay: $reply\n";
         $client->reply_msg($msg,$reply) if $reply;
     });
  

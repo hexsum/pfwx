@@ -24,6 +24,29 @@ my %logout_code = qw(
     1102    1
     1205    1
 );
+sub _parse_synccheck_data {
+    my $self = shift;
+    my($retcode,$selector) = @_;
+    if(first {$retcode == $_} keys %logout_code){
+        $self->logout($logout_code{$retcode});
+        $self->stop();
+    }
+    if(defined $retcode and defined $selector and $retcode == 0 and $selector != 0){
+        $self->{_synccheck_error_count}=0;
+        $self->_sync();
+    }
+    elsif(defined $retcode and defined $selector and $retcode == 0){
+        $self->{_synccheck_error_count}=0;
+        $self->_synccheck();
+    }
+    elsif($self->{_synccheck_error_count} < 3){
+        $self->{_synccheck_error_count}++;
+        $self->timer(5,sub{$self->_sync();});
+    }
+    else {
+        $self->timer(2,sub{$self->_synccheck();});
+    }
+}
 sub _parse_sync_data {
     my $self = shift;
     my $d = shift;

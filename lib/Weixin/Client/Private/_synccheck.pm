@@ -6,24 +6,14 @@ sub _synccheck{
     $self->{_synccheck_running} = 1;
     my $callback = sub {
         my $response = shift;
-        #window.synccheck={retcode:"0",selector:"0"}    
         $self->{_synccheck_running} = 0;
+        unless($response->is_success){
+            $self->_synccheck() ;
+            return ;
+        }
+        #window.synccheck={retcode:"0",selector:"0"}    
         my($retcode,$selector) = $response->content()=~/window\.synccheck={retcode:"([^"]+)",selector:"([^"]+)"}/g;
-        if(defined $retcode and defined $selector and $retcode == 0 and $selector != 0){
-            $self->{_synccheck_error_count}=0;
-            $self->_sync(); 
-        }
-        elsif(defined $retcode and defined $selector and $retcode == 0){
-            $self->{_synccheck_error_count}=0;
-            $self->_synccheck(); 
-        }
-        elsif($self->{_synccheck_error_count} < 3){
-            $self->{_synccheck_error_count}++;
-            $self->timer(5,sub{$self->_sync();});
-        }
-        else {
-            $self->timer(2,sub{$self->_synccheck();});
-        }
+        $self->_parse_synccheck_data($retcode,$selector);
     }; 
     my @query_string = (
         skey        =>  $self->skey,  
