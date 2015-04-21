@@ -1,3 +1,11 @@
+2015-04-21 Weixin::Client v1.5
+1）程序启动时自动删除上次运行产生的验证码临时文件
+2）登录cookie默认文件保存路径修改为临时目录下
+3）Makefile增加核心依赖模块
+4）删除SmartReply插件无用的调试代码 感谢[群Mojolicious @Matthew]的反馈
+5）添加对长时间登录超时异常处理，长时间登录超时后会自动注销退出 感谢[群Mojolicious @Matthew]的反馈
+6）修复关键请求失败时客户端无法继续正常运行的bug
+
 2015-04-12 Weixin::Client v1.4
 1）将登录cookie保存到本地，再次登录免扫码
 
