@@ -7,6 +7,7 @@ use Weixin::Message::Queue;
 
 use Weixin::Util;
 use Weixin::Client::Private::_login;
+use Weixin::Client::Private::_init;
 use Weixin::Client::Private::_logout;
 use Weixin::Client::Private::_sync;
 use Weixin::Client::Private::_synccheck;
@@ -16,7 +17,7 @@ sub login{
     my $self = shift;
     if($self->_login()){
         console "获取基础信息...\n";
-        $self->update_chatroom();
+        $self->_init();
         $self->update_friend();
 
         $self->welcome();
@@ -142,26 +143,53 @@ sub user {
     return $self->{_data}{user};
 }
 
-sub sync_key :lvalue {
+sub sync_key {
     my $self = shift;
-    $self->{_token}{sync_key};
+    if(defined $_[0]){
+        $self->{_token}{sync_key} = $_[0];
+    }
+    else{
+        return $self->{_token}{sync_key}; 
+    }
 }
 
-sub skey :lvalue {
+sub skey {
     my $self = shift;
-    $self->{_token}{skey};
+    if(defined $_[0]){
+        $self->{_token}{skey} = $_[0];
+    }
+    else{
+        return $self->{_token}{skey};
+    }
 } 
-sub wxsid :lvalue {
+sub wxsid {
     my $self = shift;
-    $self->{_token}{wxsid};
+    if(defined $_[0]){
+        $self->{_token}{wxsid} = $_[0]; 
+    }
+    else{
+       $self->{_token}{wxsid} = $self->search_cookie("wxsid") unless defined $self->{_token}{wxsid};
+       return  $self->{_token}{wxsid};
+    }
 }
-sub wxuin :lvalue {
+sub wxuin{
     my $self = shift;
-    $self->{_token}{wxuin};
+    if(defined $_[0]){
+        $self->{_token}{wxuin} = $_[0];
+    }
+    else{
+        $self->{_token}{wxuin} = $self->search_cookie("wxuin") unless defined $self->{_token}{wxuin};
+        return $self->{_token}{wxuin};
+    }
 }
-sub pass_ticket :lvalue{
+sub pass_ticket {
     my $self = shift;
-    $self->{_token}{pass_ticket};
+    if(defined $_[0]){
+        $self->{_token}{pass_ticket} = $_[0];
+    }
+    else{
+        return $self->{_token}{pass_ticket} || "undefined";
+    }
 }
 sub deviceid {
     my $self = shift;

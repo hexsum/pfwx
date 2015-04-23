@@ -58,7 +58,8 @@ sub _parse_sync_data {
         console "收到无法识别消息，已将其忽略\n";
         return; 
     }
-    $self->sync_key = $d->{SyncKey} if $d->{SyncKey}{Count}!=0;
+    $self->sync_key($d->{SyncKey}) if $d->{SyncKey}{Count}!=0;
+    $self->skey($d->{SKey}) if $d->{SKey};
     if($d->{AddMsgCount} != 0){
         my @key = qw(
             CreateTime
@@ -76,10 +77,79 @@ sub _parse_sync_data {
             $self->_add_msg($msg);
         }
     }
-    if($d->{DelContactCount}!=0){    
-    }
     if($d->{ModContactCount}!=0){
-        
+        for(@{$d->{ModContactList}}){
+            if($self->is_chatroom($_->{UserName})){
+                $_->{ChatRoomId} = $_->{UserName};delete $_->{UserName};
+                $_->{OwnerId} = $_->{ChatRoomOwner};delete $_->{ChatRoomOwner};
+                $_->{ChatRoomName} = $_->{NickName};delete $_->{NickName};
+                my @chartroom_key = qw(ChatRoomUin MemberCount OwnerUin ChatRoomId ChatRoomName OwnerId);
+                my @member_key = qw(HeadImgUrl NickName PYInitial PYQuanPin Alias Province City Sex Id Uin Signature DisplayName RemarkName RemarkPYInitial RemarkPYQuanPin);
+
+                my $chatroom = $self->search_chatroom(ChatRoomId => $_->{ChatRoomId}) ;
+                my $is_new_chatroom = 0;
+                unless(defined $chatroom){
+                    $is_new_chatroom = 1;
+                    $chatroom = {};
+                }
+                for my $k(@chartroom_key){
+                    $chatroom->{$k} = encode_utf8($_->{$k}) if defined $_->{$k};
+                } 
+                if($_->{MemberCount} != 0){
+                    my %members ;
+                    for my $m (@{$_->{MemberList}}){
+                        $m->{Id} = $m->{UserName};delete $m->{UserName};
+                        my $member = {};
+                        for my $k(@member_key){
+                            $member->{$k} = encode_utf8($m->{$k}) if defined $m->{$k};
+                        }
+                        $member->{$_} = $chatroom->{$_} for(grep {$_ ne "Member"} keys %$chatroom); 
+                        $members{ $member->{Id} } = $member;
+                    } 
+                    if($is_new_chatroom){#new chatroom
+                        $chatroom->{Member} = [values %members];
+                        $self->add_chatroom($chatroom,1);
+                    }
+                    else{#chatroom modified
+                        for(@{$chatroom->{Member}}){
+                            next unless exists $members{$_->{Id}};
+                            for my $k(keys %$_){
+                                next if exists $members{$_->{Id}}{$k}; 
+                                $members{$_->{Id}}{$k} = $_->{$k};
+                            }    
+                        }        
+                        $chatroom->{Member} = [values %members];
+                    }
+                }
+            }
+            else{
+                my @friend_key = qw(HeadImgUrl NickName PYInitial PYQuanPin Alias Province City Sex Id Uin Signature DisplayName RemarkName RemarkPYInitial RemarkPYQuanPin);
+                $_->{Id} = $_->{UserName};delete $_->{UserName};
+                $_->{Sex} = code2sex($_->{Sex}) if $_->{Sex};
+                my $friend = $self->search_friend(Id=>$_->{Id});
+                my $is_new_friend = 0;
+                unless(defined $friend){
+                    $is_new_friend = 1;
+                    $friend = {};
+                }
+                for my $k(@friend_key){
+                    $friend->{$k} = encode_utf8($_->{$k}) if defined $_->{$k};      
+                }
+                $self->add_friend($friend) if $is_new_friend;
+            }
+        } 
+    }
+    if($d->{DelContactCount}!=0){    
+        for(@{$d->{DelContactList}}){
+            if($self->is_chatroom($_->{UserName})){
+                $_->{ChatRoomId} = $_->{UserName};delete $_->{UserName};
+                $self->del_chatroom($_->{ChatRoomId}); 
+            }
+            else{
+                $_->{Id} = $_->{UserName};delete $_->{UserName};
+                $self->del_friend($_->{Id});
+            }
+        }
     }
     if($d->{ModChatRoomMemberCount}!=0){
     
@@ -107,7 +177,7 @@ sub _add_msg{
         }
         
         if($msg->{MsgClass} eq "send"){
-            $msg->{Type}    = index($msg->{ToId},'@@')==0?"chatroom_message":"friend_message";
+            $msg->{Type}    = $self->is_chatroom($msg->{ToId})?"chatroom_message":"friend_message";
             if($msg->{Type} eq "friend_message"){
                 my $friend = $self->search_friend(Id=>$msg->{ToId}) || {}; 
                 $msg->{FromNickName} = "我";
@@ -118,7 +188,7 @@ sub _add_msg{
                 $msg->{ToRemarkName} = $friend->{RemarkName};
             }
             elsif($msg->{Type} eq "chatroom_message"){
-                my $chatroom = $self->search_chatroom(ChatRoomId=>$msg->{ToId}) || {};
+                my $chatroom = $self->search_chatroom(ChatRoomId=>$msg->{ToId}) || $self->get_chatroom($msg->{ToId}) || {};
                 $msg->{FromNickName} = "我";
                 $msg->{FromRemarkName} = undef;
                 $msg->{FromUin} = $self->{_data}{user}{Uin};
@@ -129,7 +199,7 @@ sub _add_msg{
             $msg = $self->_mk_ro_accessors($msg,"Send");
         }
         elsif($msg->{MsgClass} eq "recv"){
-            $msg->{Type}    = index($msg->{FromId},'@@')==0?"chatroom_message":"friend_message"; 
+            $msg->{Type}    = $self->is_chatroom($msg->{FromId})?"chatroom_message":"friend_message"; 
             if($msg->{Type} eq "friend_message"){
                 my $friend = $self->search_friend(Id=>$msg->{FromId}) || {}; 
                 $msg->{FromNickName} = $friend->{NickName};
@@ -142,7 +212,7 @@ sub _add_msg{
             elsif($msg->{Type} eq "chatroom_message"){
                 my ($chatroom_member_id,$content) = $msg->{Content}=~/^(\@.+):<br\/>(.*)/g; 
                 $msg->{Content} = $content;
-                my $member = $self->search_chatroom_member(ChatRoomId=>$msg->{FromId},Id=>$chatroom_member_id) || {};
+                my $member = $self->search_chatroom_member(ChatRoomId=>$msg->{FromId},Id=>$chatroom_member_id) || $self->get_chatroom($msg->{FromId}) ||  {};
                 $msg->{FromNickName} = $member->{NickName};
                 $msg->{FromId}       = $member->{Id};
                 $msg->{FromRemarkName} = undef;
@@ -160,7 +230,6 @@ sub _add_msg{
         $self->{_receive_message_queue}->put($msg);
     }
     elsif($msg->{MsgType} eq MM_DATA_STATUSNOTIFY){
-    
     }
     elsif($msg->{MsgType} eq MM_DATA_SYSNOTICE){
         

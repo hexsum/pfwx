@@ -1,5 +1,5 @@
 package Weixin::Client;
-sub _update_chatroom {
+sub _init {
     my $self = shift;
     my $api = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxinit";
     my @query_string = (
@@ -30,12 +30,13 @@ sub _update_chatroom {
 
     $d->{User}{Id} = $d->{User}{UserName} ;delete $d->{User}{UserName};
     $d->{User}{Sex} = Weixin::Util::code2sex($d->{User}{Sex});
-    $self->sync_key = $d->{SyncKey};
+    $self->sync_key($d->{SyncKey}) if $d->{SyncKey}{Count}!=0;
+    $self->skey($d->{SKey}) if $d->{SKey};
     @{$self->{_data}{user}}{@user_key}  = map {$_=encode_utf8($_);$_;} @{$d->{User}}{@user_key};
 
     if($d->{Count}!=0){
         for my $each(@{$d->{ContactList}}) {
-            if($each->{MemberCount}!=0){#chatroom
+            if($self->is_chatroom($each->{UserName})){#chatroom
                 $each->{ChatRoomUin}  = $each->{Uin};delete $each->{Uin};
                 $each->{ChatRoomId}  = $each->{UserName};delete $each->{UserName};
                 $each->{ChatRoomName}  = $each->{NickName};delete $each->{NickName};
@@ -49,9 +50,9 @@ sub _update_chatroom {
                     @{$member}{@chartroom_key} = @{$chatroom}{@chartroom_key};  
                     push @{$chatroom->{Member}},$member;
                 }
-                $self->add_chatroom($chatroom);
+                $self->add_chatroom($chatroom,1);
             }
-            elsif($each->{MemberCount}==0){#friend
+            else{#friend
                 $each->{Id} = $each->{UserName};delete $each->{UserName};
                 $each->{Sex} = Weixin::Util::code2sex($each->{Sex});
                 my $friend = {};

@@ -53,10 +53,10 @@ sub _login{
             #<error><ret>0</ret><message>OK</message><skey>@crypt_859d8a8a_3f3db5290570080d1db29da9507e35de</skey><wxsid>rsuMHe7xmA0aHW1D</wxsid><wxuin>138122335</wxuin><pass_ticket>hWdpMVCMqXIVfhXLcsJxYrC6bv785tVDLZAres096ZE%3D</pass_ticket></error
             my %d = $data=~/<([^<>]+?)>([^<>]+?)<\/\1>/g;
             return 0 if $d{ret} != 0;
-            $self->skey = $d{skey};
-            $self->wxsid = $d{wxsid};
-            $self->wxuin = $d{wxuin};
-            $self->pass_ticket = $d{pass_ticket};
+            $self->skey($d{skey});
+            $self->wxsid($d{wxsid});
+            $self->wxuin($d{wxuin});
+            $self->pass_ticket($d{pass_ticket});
             console "微信登录成功\n";
             return 1;
         }

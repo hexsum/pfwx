@@ -7,12 +7,12 @@ sub _logout {
     my @query_string = (
         redirect    =>  1,
         type        =>  $type,
-        skey        =>uri_escape($self->{_token}{skey}),
+        skey        =>  uri_escape($self->skey),
     ); 
     my $post = [
-        sid => $self->{_token}{wxsid},
-        uin => $self->{_token}{wxuin},
-    ],
+        sid => $self->wxsid,
+        uin => $self->wxuin,
+    ];
     $self->http_post(Weixin::Util::gen_url($api,@query_string),$post,(Referer=>"https://wx.qq.com/?&lang=zh_CN"));  
     return 1;
 }

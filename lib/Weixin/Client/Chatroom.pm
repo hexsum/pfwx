@@ -2,11 +2,13 @@ package Weixin::Client::Chatroom;
 use strict;
 use List::Util qw(first);
 use Weixin::Client::Private::_update_chatroom_member;
-use Weixin::Client::Private::_update_chatroom;
+use Weixin::Client::Private::_get_chatroom;
 sub add_chatroom{
     my $self = shift;
     my $chatroom = shift;
-    $self->update_chatroom_member($chatroom);
+    my $is_update_member = shift || 0;
+    $self->update_chatroom_member($chatroom) if ($is_update_member and  $chatroom->{MemberCount}!=0);
+    $chatroom->{ChatRoomName} = $self->get_default_chatroomname($chatroom) if $chatroom->{ChatRoomName} eq "";
     my $c = first {$chatroom->{ChatRoomId} eq $_->{ChatRoomId}} @{$self->{_data}{chatroom}} ;
     defined $c?($c = $chatroom):(push @{$self->{_data}{chatroom}},$chatroom);
 }
@@ -79,9 +81,33 @@ sub update_chatroom_member{
     my $chatroom = shift;
     $self->_update_chatroom_member($chatroom);
 }
-sub update_chatroom {
+sub get_chatroom {
     my $self = shift;
-    $self->_update_chatroom();
+    my $chatroom_id = shift;
+    my $chatroom = $self->_get_chatroom($chatroom_id);
+    $self->add_chatroom($chatroom,1) if defined $chatroom;
+    return $chatroom;
+}
+sub is_chatroom {
+    my $self = shift;
+    my $chatroom_id = shift;
+    return index($chatroom_id,'@@')==0?1:0;
+}
+
+sub get_default_chatroomname {
+    my $self = shift;
+    my $chatroom = shift;
+    return $chatroom->{ChatRoomName} if $chatroom->{ChatRoomName} ne "";
+    my $max_count = 3;
+    my $i=0;
+    my @name;
+    for(@{$chatroom->{Member}}){
+        last if $i > $max_count;
+        push @name,$_->{DisplayName}||$_->{RemarkName}||$_->{NickName};
+        $i++;
+    }
+    return join "、",@name if @name;
+    return "[未命名]";
 }
 
 1;

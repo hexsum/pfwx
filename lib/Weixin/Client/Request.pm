@@ -35,4 +35,17 @@ sub asyn_http_post {
         $callback->($response);
     });
 }
+
+sub search_cookie{
+    my($self,$cookie) = @_;
+    my $result = undef;
+    $self->{cookie_jar}->scan(sub{
+        my($version,$key,$val,$path,$domain,$port,$path_spec,$secure,$expires,$discard,$rest) =@_;
+        if($key eq $cookie){
+            $result = $val ;
+            return;
+        }
+    });
+    return $result;
+}
 1;
