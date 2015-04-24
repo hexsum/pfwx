@@ -14,7 +14,6 @@ sub json_decode {
     eval{
         $d = JSON->new->utf8->decode($json);
     };
-    die $@ if $@;   
     return $d;
 }
 sub json_encode {
@@ -24,7 +23,6 @@ sub json_encode {
     eval{
         $json = JSON->new->utf8->encode($d);
     };
-    die $@ if $@;
     return $json; 
 }
 

@@ -17,13 +17,13 @@ WriteMakefile(
         "LWP::Protocol::https"  => 0,
     }, # e.g., Module::Name => 1.1
     dist              => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean               => { FILES => 'Weixin-Client-*' },
+    clean               => { FILES => 'Weixin-Client-* MANIFEST' },
     META_MERGE => {
         resources => {     
             repository=>{
                 type    => 'git',
-                url     => 'git://github.com/sjdy521/Weixin-Client.git',
-                web     =>  'https://github.com/sjdy521/Weixin-Client',
+                url     => 'git://github.com/sjdy521/pfwx.git',
+                web     =>  'https://github.com/sjdy521/pfwx',
             },
         },
     },
