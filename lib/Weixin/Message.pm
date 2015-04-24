@@ -288,7 +288,7 @@ sub send_friend_msg {
 sub send_chatroom_msg {
     my $self = shift;
     my ($chatroom,$content) = @_;
-    unless(defined $chatroom and $chatroom->{Id}){
+    unless(defined $chatroom and $chatroom->{ChatRoomId}){
         console "send_chatroom_msg 参数无效\n";
         return;
     }
