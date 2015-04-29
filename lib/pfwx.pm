@@ -1,4 +1,4 @@
 package pfwx;
-use base Weixin::Client;
+use base qw(Weixin::Client);
 our $VERSION = "1.8";
 1;

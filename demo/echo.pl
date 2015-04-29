@@ -1,6 +1,6 @@
 use lib "../lib";
-use pfwx;
-my $client = pfwx->new(debug=>0);
+use Weixin::Client;
+my $client = Weixin::Client->new(debug=>0);
 $client->load("ShowMsg");
 $client->login();
 $client->on_receive_msg = sub{
