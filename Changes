@@ -1,3 +1,8 @@
+2015-05-19 Weixin::Client v1.9
+1）修复reply_msg回复群组消息时失败的bug，感谢 @Matthew 的反馈
+2）修复demo示例代码
+3）修复pfwx模块的错误
+
 2015-04-24 Weixin::Client v1.8
 1）修复json转换失败程序退出的bug
 2）修复Makefile.PL错误
