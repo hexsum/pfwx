@@ -306,7 +306,7 @@ sub reply_msg {
     my $content = shift;
     return if $msg->{MsgClass} ne "recv";
     if($msg->{Type} eq "chatroom_message"){
-        my $chatroom = $self->search_chatroom(Id=>$msg->{ChatRoomId});
+        my $chatroom = $self->search_chatroom(ChatRoomId=>$msg->{ChatRoomId});
         $self->send_chatroom_msg($chatroom,$content);
     }
     elsif($msg->{Type} eq "friend_message"){
