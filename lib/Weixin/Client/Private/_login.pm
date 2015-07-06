@@ -17,7 +17,10 @@ sub _login{
         console "无法获取到登录二维码，登录失败\n";
         exit -1 ;
     }
-    $self->_get_qrcode_image($qrcode_uuid);
+    unless($self->_get_qrcode_image($qrcode_uuid)){
+        console "下载二维码失败，客户端退出\n" 
+        exit -1 ;
+    }
     my $i=1; 
     console "等待手机微信扫描二维码...\n";
     while(1){

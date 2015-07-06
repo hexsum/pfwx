@@ -7,7 +7,7 @@ sub _get_qrcode_image{
     my @query_string = (
         t => "webwx",
     ); 
-    my $r = $self->http_get(Weixin::Util::gen_url($api . "/$qrcode_uuid",@query_string));
+    my $r = $self->http_get(Weixin::Util::gen_url($api . $qrcode_uuid,@query_string));
     return undef unless defined $r;
     my ($fh, $filename) = tempfile("weixin_qrcode_XXXX",SUFFIX =>".jpg",DIR => $self->{tmpdir}); 
     binmode $fh;
