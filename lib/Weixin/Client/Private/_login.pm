@@ -18,7 +18,7 @@ sub _login{
         exit -1 ;
     }
     unless($self->_get_qrcode_image($qrcode_uuid)){
-        console "下载二维码失败，客户端退出\n" 
+        console "下载二维码失败，客户端退出\n" ;
         exit -1 ;
     }
     my $i=1; 
