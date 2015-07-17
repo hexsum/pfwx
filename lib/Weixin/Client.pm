@@ -18,7 +18,7 @@ use base qw(
     Weixin::Client::Base
 );
 
-our $VERSION = "1.9";
+our $VERSION = "2.0";
 
 sub new{
     my $class = shift;

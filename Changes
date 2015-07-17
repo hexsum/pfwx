@@ -1,3 +1,7 @@
+2015-07-17 Weixin::Client v2.0
+1）修复二维码下载bug
+2）修复客户端无法启动的错误
+
 2015-05-19 Weixin::Client v1.9
 1）修复reply_msg回复群组消息时失败的bug，感谢 @Matthew 的反馈
 2）修复demo示例代码
