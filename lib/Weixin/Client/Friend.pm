@@ -4,7 +4,7 @@ use Weixin::Client::Private::_update_friend;
 sub add_friend{
     my $self = shift;
     my $friend = shift;
-    my $f = first {$friend->{Uin} eq $_->{Uin}} @{$self->{_data}{friend}};    
+    my $f = first {$friend->{Id} eq $_->{Id}} @{$self->{_data}{friend}};    
     if(defined $f){
         $f = $friend;
     } 

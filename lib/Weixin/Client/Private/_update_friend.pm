@@ -17,6 +17,7 @@ sub _update_friend{
     return if $d->{MemberCount} == 0; 
     my @friend_key = qw(HeadImgUrl NickName PYInitial PYQuanPin Alias Province City Sex Id Uin Signature DisplayName RemarkName RemarkPYInitial RemarkPYQuanPin); 
     for my $m (@{$d->{MemberList}}){
+        next if $self->is_chatroom($m->{UserName});
         next if $m->{MemberCount}!=0;
         $m->{Id} = $m->{UserName};delete $m->{UserName};
         $m->{Sex} = code2sex($m->{Sex});
