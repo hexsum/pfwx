@@ -74,6 +74,10 @@ sub _parse_sync_data {
             $_->{FromId} = $_->{FromUserName};delete $_->{FromUserName};
             $_->{ToId} = $_->{ToUserName};delete $_->{ToUserName};
             @{$msg}{@key} = map {$_=encode_utf8($_);$_} @{$_}{@key};
+            eval{
+                require HTML::Entities;
+                $msg->{Content} = HTML::Entities::decode_entities($msg->{Content});
+            };
             $self->_add_msg($msg);
         }
     }
