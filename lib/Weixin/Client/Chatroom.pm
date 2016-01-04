@@ -7,8 +7,8 @@ sub add_chatroom{
     my $self = shift;
     my $chatroom = shift;
     my $is_update_member = shift || 0;
-    $self->update_chatroom_member($chatroom) if ($is_update_member and  $chatroom->{MemberCount}!=0);
     $chatroom->{ChatRoomName} = $self->get_default_chatroomname($chatroom) if $chatroom->{ChatRoomName} eq "";
+    $self->update_chatroom_member($chatroom) if ($is_update_member and  $chatroom->{MemberCount}!=0);
     my $c = first {$chatroom->{ChatRoomId} eq $_->{ChatRoomId}} @{$self->{_data}{chatroom}} ;
     defined $c?($c = $chatroom):(push @{$self->{_data}{chatroom}},$chatroom);
 }

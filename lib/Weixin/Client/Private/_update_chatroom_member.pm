@@ -35,8 +35,8 @@ sub _update_chatroom_member{
     my @member_key = qw(HeadImgUrl NickName PYInitial PYQuanPin Alias Province City Sex Id Uin Signature DisplayName RemarkName RemarkPYInitial RemarkPYQuanPin);
     my @chartroom_key = qw(ChatRoomUin MemberCount OwnerUin ChatRoomId ChatRoomName);
     for my $e (@{$d->{ContactList}}){
-        $e->{ChatRoomUin} = $e->{ChatRoomId};delete $e->{ChatRoomId};
-        next if $e->{ChatRoomUin} ne $chatroom->{ChatRoomUin};
+        #$e->{ChatRoomUin} = $e->{ChatRoomId};delete $e->{ChatRoomId};
+        #next if $e->{ChatRoomUin} ne $chatroom->{ChatRoomUin};
         $e->{Sex} = code2sex($e->{Sex});
         $e->{Id} = $e->{UserName};delete $e->{UserName};
         @{$member_info{$e->{Id}}}{@member_key} = map {$_=encode_utf8($_);$_} (@{$e}{@member_key});

@@ -82,11 +82,11 @@ sub new{
             return;
             
         });
-        #$self->{ua}->add_handler(
-        #    response_done => sub { my($response, $ua, $h) = @_;
-        #    #print substr($response->content,0,1000),"\n" if $response->header("content-type")=~/^text/;
-        #    return;
-        #});
+        $self->{ua}->add_handler(
+            response_done => sub { my($response, $ua, $h) = @_;
+            print substr($response->content,0,1000),"\n" if $response->header("content-type")=~/^text/;
+            return;
+        });
     }
     bless $self,$class;
     $self->prepare();

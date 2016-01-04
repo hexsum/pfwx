@@ -216,7 +216,11 @@ sub _add_msg{
             elsif($msg->{Type} eq "chatroom_message"){
                 my ($chatroom_member_id,$content) = $msg->{Content}=~/^(\@.+):<br\/>(.*)/g; 
                 $msg->{Content} = $content;
-                my $member = $self->search_chatroom_member(ChatRoomId=>$msg->{FromId},Id=>$chatroom_member_id) || $self->get_chatroom($msg->{FromId}) ||  {};
+                my $member = $self->search_chatroom_member(ChatRoomId=>$msg->{FromId},Id=>$chatroom_member_id);
+                if(not defined $member and defined $self->get_chatroom($msg->{FromId})){
+                    $member = $self->search_chatroom_member(ChatRoomId=>$msg->{FromId},Id=>$chatroom_member_id);
+                }
+                $member = {} if not defined $member;
                 $msg->{FromNickName} = $member->{NickName};
                 $msg->{FromId}       = $member->{Id};
                 $msg->{FromRemarkName} = undef;
