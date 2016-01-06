@@ -1,7 +1,8 @@
 package Weixin::Client;
+use strict;
 sub _get_chatroom{
     my $self  = shift;
-    my $chatroom_id = shift;
+    my @chatroom_id = @_;
     my $post = {
         BaseRequest =>  {
             Uin         =>  $self->wxuin,
@@ -9,8 +10,8 @@ sub _get_chatroom{
             Sid         =>  $self->wxsid,
             Skey        =>  $self->skey,
         },
-        Count       =>  1,
-        List        =>  [{UserName=>$chatroom_id,ChatRoomId=>""}],
+        Count       =>  @chatroom_id+0,
+        List        =>  [map { {UserName=>$_,ChatRoomId=>""} } @chatroom_id ],
     };
 
     my $api = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxbatchgetcontact";
@@ -26,16 +27,16 @@ sub _get_chatroom{
     my $d = $self->json_decode($json);
     return unless defined $d;
     return if $d->{BaseResponse}{Ret}!=0;
-    return if $d->{Count} != 1;
     my @member_key = qw(HeadImgUrl NickName PYInitial PYQuanPin Alias Province City Sex Id Uin Signature DisplayName RemarkName RemarkPYInitial RemarkPYQuanPin);
-    my @chartroom_key = qw(ChatRoomUin MemberCount OwnerUin ChatRoomId ChatRoomName);
+    my @chatroom_key = qw(ChatRoomUin MemberCount OwnerUin ChatRoomId ChatRoomName);
+    my @chatroom;
     for my $each (@{$d->{ContactList}}){
         if($self->is_chatroom($each->{UserName})){#chatroom
             $each->{ChatRoomUin}  = $each->{Uin};delete $each->{Uin};
             $each->{ChatRoomId}  = $each->{UserName};delete $each->{UserName};
             $each->{ChatRoomName}  = $each->{NickName};delete $each->{NickName};
             my $chatroom = {};
-            for(@chartroom_key){
+            for(@chatroom_key){
                 $chatroom->{$_} = encode_utf8($each->{$_}) if defined $each->{$_};
             }
             $chatroom->{Member} = [];
@@ -48,9 +49,9 @@ sub _get_chatroom{
                 $member->{$_} = $chatroom->{$_} for(grep {$_ ne "Member"} keys %$chatroom);
                 push @{$chatroom->{Member}},$member;
             }
-            return $chatroom;
+            push @chatroom,$chatroom;
         }
     }
-    return ;
+    return @chatroom;
 }
 1;

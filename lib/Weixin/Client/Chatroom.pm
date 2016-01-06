@@ -8,9 +8,14 @@ sub add_chatroom{
     my $chatroom = shift;
     my $is_update_member = shift || 0;
     $chatroom->{ChatRoomName} = $self->get_default_chatroomname($chatroom) if $chatroom->{ChatRoomName} eq "";
-    $self->update_chatroom_member($chatroom) if ($is_update_member and  $chatroom->{MemberCount}!=0);
+    #$self->update_chatroom_member($chatroom) if ($is_update_member and  $chatroom->{MemberCount}!=0);
     my $c = first {$chatroom->{ChatRoomId} eq $_->{ChatRoomId}} @{$self->{_data}{chatroom}} ;
-    defined $c?($c = $chatroom):(push @{$self->{_data}{chatroom}},$chatroom);
+    if(defined $c){
+        %$c = %$chatroom;
+    }
+    else{
+        push @{$self->{_data}{chatroom}},$chatroom;
+    }
 }
 sub del_chatroom{
     my $self = shift;
@@ -65,7 +70,7 @@ sub del_chatroom_member{
     for(my $i = 0;$i<@{$self->{_data}{chatroom}};$i++){
         if($self->{_data}{chatroom}[$i]{ChatRoomId} eq $chatroom_id){
             for(my $j=0;$j<@{$self->{_data}{chatroom}[$i]{Member}};$j++){
-                if($self->{_data}{chatroom}[$i]{Member}[$j]{Uin} eq $member_id){
+                if($self->{_data}{chatroom}[$i]{Member}[$j]{Id} eq $member_id){
                     splice @{$self->{_data}{chatroom}[$i]{Member}[$j]},$j,1;
                     return 1;
                 }
@@ -83,10 +88,10 @@ sub update_chatroom_member{
 }
 sub get_chatroom {
     my $self = shift;
-    my $chatroom_id = shift;
-    my $chatroom = $self->_get_chatroom($chatroom_id);
-    $self->add_chatroom($chatroom,1) if defined $chatroom;
-    return $chatroom;
+    my @chatroom_id = @_;
+    my @chatroom = $self->_get_chatroom(@chatroom_id);
+    $self->add_chatroom($_,1) for @chatroom;
+    return @chatroom;
 }
 sub is_chatroom {
     my $self = shift;

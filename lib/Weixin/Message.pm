@@ -192,7 +192,11 @@ sub _add_msg{
                 $msg->{ToRemarkName} = $friend->{RemarkName};
             }
             elsif($msg->{Type} eq "chatroom_message"){
-                my $chatroom = $self->search_chatroom(ChatRoomId=>$msg->{ToId}) || $self->get_chatroom($msg->{ToId}) || {};
+                my $chatroom = $self->search_chatroom(ChatRoomId=>$msg->{ToId});
+                if(not defined $chatroom){
+                    $self->get_chatroom($msg->{ToId});
+                    $chatroom = $self->search_chatroom(ChatRoomId=>$msg->{ToId}) || {};
+                }
                 $msg->{FromNickName} = "我";
                 $msg->{FromRemarkName} = undef;
                 $msg->{FromUin} = $self->{_data}{user}{Uin};
@@ -217,10 +221,10 @@ sub _add_msg{
                 my ($chatroom_member_id,$content) = $msg->{Content}=~/^(\@.+):<br\/>(.*)/g; 
                 $msg->{Content} = $content;
                 my $member = $self->search_chatroom_member(ChatRoomId=>$msg->{FromId},Id=>$chatroom_member_id);
-                if(not defined $member and defined $self->get_chatroom($msg->{FromId})){
-                    $member = $self->search_chatroom_member(ChatRoomId=>$msg->{FromId},Id=>$chatroom_member_id);
+                if(not defined $member){
+                    $self->get_chatroom($msg->{FromId});
+                    $member = $self->search_chatroom_member(ChatRoomId=>$msg->{FromId},Id=>$chatroom_member_id) || {};
                 }
-                $member = {} if not defined $member;
                 $msg->{FromNickName} = $member->{NickName};
                 $msg->{FromId}       = $member->{Id};
                 $msg->{FromRemarkName} = undef;

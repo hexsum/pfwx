@@ -61,5 +61,7 @@ sub _init {
             }
         }
     }
+    
+    my @chatrooms = $self->get_chatroom(map {$_->{ChatRoomId}} @{ $self->{_data}{chatroom} });
 }
 1;
