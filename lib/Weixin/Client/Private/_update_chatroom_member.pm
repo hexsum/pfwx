@@ -4,7 +4,7 @@ sub _update_chatroom_member{
     my $chatroom = shift;
     my @list;
     for(@{$chatroom->{Member}}){
-        push @list,{UserName=>$_->{Id},ChatRoomId=>defined($chatroom->{ChatRoomUin})?$chatroom->{ChatRoomUin}+0:""} if defined $_->{Id};
+        push @list,{UserName=>$_->{Id},EncryChatRoomId=>(defined $chatroom->{Id}?$chatroom->{Id}:"")} if defined $_->{Id};
     }
     my $post = {
         BaseRequest =>  {
