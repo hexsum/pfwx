@@ -12,7 +12,7 @@ sub _synccheck{
             return ;
         }
         #window.synccheck={retcode:"0",selector:"0"}    
-        my($retcode,$selector) = $response->content()=~/window\.synccheck={retcode:"([^"]+)",selector:"([^"]+)"}/g;
+        my($retcode,$selector) = $response->content()=~/window\.synccheck=\{retcode:"([^"]+)",selector:"([^"]+)"\}/g;
         $self->_parse_synccheck_data($retcode,$selector);
     }; 
     my @query_string = (

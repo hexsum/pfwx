@@ -1,3 +1,6 @@
+2016-01-25 Weixin::Client v2.1
+1）该项目已经停止维护，请关注重构项目 https://github.com/sjdy521/Mojo-Weixin
+
 2015-07-17 Weixin::Client v2.0
 1）修复二维码下载bug
 2）修复客户端无法启动的错误

@@ -6,6 +6,10 @@
 
 Weixin::Client - A Weixin Client in Perl Language
 
+=head1 NOTICE
+
+该项目已经停止维护，请关注重构项目 L<Mojo::Weixin>
+
 =head1 SYNOPSIS
 
     use Weixin::Client;
